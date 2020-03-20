@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Owned Forests</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <script>
+    window.onload = function name() {
+      document.getElementById("reportdate").innerHTML = new Date().toLocaleDateString();
+    };
+  </script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/map">Map</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/farmer-report">Forest Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/farmer-summary">Farmer Summary</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/buyer-summary">Trader Summary</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/forest-catalog">Forests Catalog</a>
+      </li>
+    </ul>
+    <a class="navbar-brand" href="/">
+      <img src="/images/rabobanklogo.png" width="142" height="40" class="d-inline-block align-top" alt="">
+    </a>
+  </nav>
+  <!------------------------------------------------------------------------->
+  <div class="jumbotron jumbotron-fluid bg-white" style="min-height: calc(100vh - 90px);">
+    <div class="container" style="margin-top: 2rem;">
+      <h1 class="display-5" style="font-weight: lighter;">Farmer Summary</h1>
+
+      <div class="lead"><b>Date: </b>
+        <p id="reportdate" style="display: inline-block;"></p>
+      </div>
+
+      <hr class="mb-4">
+
+      <table class="table table-sm table-bordered table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Forest Name</th>
+            <th scope="col">Area</th>
+            <th scope="col">Year</th>
+            <th scope="col">Carbon Commit</th>
+            <th scope="col">Blockchain ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">NW</th>
+            <td>11.2</td>
+            <td>2030</td>
+            <td>406</td>
+            <td>1HB5XMLmzFVj8ALj6mfBsbifRoD4miY36v</td>
+          </tr>
+          <tr>
+            <th scope="row">SW</th>
+            <td>12.4</td>
+            <td>2040</td>
+            <td>602</td>
+            <td>3Hcrmx4WtWS61QpkHg32HaBkXPPmMuo2fK</td>
+          </tr>
+          <tr>
+            <th scope="row">Home</th>
+            <td>18.6</td>
+            <td>2050</td>
+            <td>845</td>
+            <td>38ENmTr2AD1avJrmmi9iM7PfS6nZVmuMKf</td>
+          </tr>
+          <tr>
+            <th scope="row">Central</th>
+            <td>1.42</td>
+            <td>2060</td>
+            <td>243</td>
+            <td>34GKMHKfbn37ahmypWmxjT1KdBgfDGdJXW</td>
+          </tr>
+          <tr class="bg-light">
+            <th scope="row">Total</th>
+            <td>43.62</td>
+            <td></td>
+            <td>2096</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="lead">† The carbon stocks shown represent average, regional values predicted for a forest stand of the
+        size, species mix and location specified. This report is not guaranteed to represent the exact stand conditions
+        for the user’s actual forest stand.</p>
+      <a class="btn btn-outline-primary btn-lg" href="/map" role="button">Back To Map</a>
+    </div>
+  </div>
+  <footer class="bg-light mt-auto py-3 " style="width: 100%; text-align: center;">
+    <span class="text-muted">Carbon App - 2020</span>
+  </footer>
+</body>
+
+</html>

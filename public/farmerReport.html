@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Latest Report</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const nameParam = urlParams.get('name');
+    const foresttypeParam = urlParams.get('foresttype');
+    const plcParam = urlParams.get('plc');
+    const ageParam = urlParams.get('age');
+    const areaParam = urlParams.get('area');
+
+    window.onload = function name() {
+      document.getElementById("name").innerHTML = nameParam;
+      document.getElementById("foresttype").innerHTML = foresttypeParam === 'Please Select' ? 'Unknown' : foresttypeParam;
+      if (plcParam === 'true') {
+        document.getElementById("plc").innerHTML = 'Forest';
+      } else {
+        document.getElementById("plc").innerHTML = 'Other';
+      }
+      document.getElementById("age").innerHTML = ageParam;
+      document.getElementById("area").innerHTML = areaParam;
+      document.getElementById("reportdate").innerHTML = new Date().toLocaleDateString();
+    };
+
+    function summaryPage() {
+      window.location.href = "/farmer-summary";
+    }
+  </script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/map">Map</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/farmer-report">Forest Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/farmer-summary">Farmer Summary</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/buyer-summary">Trader Summary</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/forest-catalog">Forests Catalog</a>
+      </li>
+    </ul>
+    <a class="navbar-brand" href="/">
+      <img src="/images/rabobanklogo.png" width="142" height="40" class="d-inline-block align-top" alt="">
+    </a>
+  </nav>
+  <!------------------------------------------------------------------------->
+  <div class="jumbotron jumbotron-fluid bg-white" style="min-height: calc(100vh - 90px);">
+    <div class="container" style="margin-top: 2rem;">
+      <h1 class="display-5" style="font-weight: lighter;">Forest Report</h1>
+      <div class="row">
+        <div class="col-sm">
+          <div class="lead"><b>Name: </b>
+            <p id="name" style="display: inline-block;"></p>
+          </div>
+          <div class="lead"><b>Forest Type : </b>
+            <p id="foresttype" style="display: inline-block;"></p>
+          </div>
+          <div class="lead"><b>Past Land Cover: </b>
+            <p id="plc" style="display: inline-block;"></p>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="lead"><b>Age: </b>
+            <p id="age" style="display: inline-block;"></p>
+          </div>
+          <div class="lead"><b>Area (acres) : </b>
+            <p id="area" style="display: inline-block;"></p>
+          </div>
+          <div class="lead"><b>Date: </b>
+            <p id="reportdate" style="display: inline-block;"></p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" onclick="summaryPage()" type="button" color="white">Add</button>
+      <hr class="my-4">
+
+      <table class="table table-sm table-bordered table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Source</th>
+            <th scope="col">2020</th>
+            <th scope="col">2030</th>
+            <th scope="col">2040</th>
+            <th scope="col">2050</th>
+            <th scope="col">2060</th>
+            <th scope="col">Average Yearly Emissions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Total Stand Carbon (tonnes CO2 equiv.)</th>
+            <td>0</td>
+            <td>124</td>
+            <td>348</td>
+            <td>896</td>
+            <td>1034</td>
+            <td style="font-weight: bold;">346</td>
+          </tr>
+          <tr>
+            <th scope="row">Harvested Carbon (tonnes CO2 equiv.)</th>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>122</td>
+            <td>458</td>
+            <td style="font-weight: bold;">243</td>
+          </tr>
+          <tr class="bg-light">
+            <th scope="row">Total</th>
+            <td>0</td>
+            <td>124</td>
+            <td>348</td>
+            <td>1018</td>
+            <td>1492</td>
+            <td style="font-weight: bold;">569</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="lead">† The carbon stocks shown represent average, regional values predicted for a forest stand of the
+        size, species mix and location specified. This report is not guaranteed to represent the exact stand conditions
+        for the user’s actual forest stand.</p>
+      <a class="btn btn-outline-primary btn-lg" href="/map" role="button">Back To Map</a>
+    </div>
+  </div>
+  <footer class="bg-light mt-auto py-3 " style="width: 100%; text-align: center;">
+    <span class="text-muted">Carbon App - 2020</span>
+  </footer>
+
+</body>
+
+</html>

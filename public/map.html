@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Carbon App</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+
+  <style type='text/css'>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', Helvetica, Arial, Sans-Serif
+    }
+
+    #stopDrawingBtn {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      width: 150px;
+      height: 50px;
+      margin-left: -75px;
+      visibility: hidden;
+    }
+
+    .info-box {
+      background-color: White;
+      border: medium solid rgb(191, 222, 255);
+      border-radius: 5px;
+      min-height: 100px;
+      width: 400px;
+    }
+
+    .info-box-title {
+      background: #f8f9fa;
+      color: black;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 10px;
+      border-bottom: medium solid rgb(191, 222, 255);
+      margin-bottom: 15px;
+    }
+
+    .info-box-label {
+      width: 150px;
+    }
+
+    .form-group {
+      padding-left: 10px;
+    }
+  </style>
+
+  <script type='text/javascript'
+    src='https://www.bing.com/api/maps/mapcontrol?key=ArwJRRbjIzraBcPeT8ajV_mTMDLGm9ha-8uKGREFhLs-sA9deFFfSn0BhFf7efem'></script>
+  <script type='text/javascript'>
+    var map, drawingManager, infobox, areaOutput, infoboxTemplate, overlay;
+
+    function loadMapScenario() {
+      infoboxTemplate = document.querySelector("#infoboxText").outerHTML;
+
+      map = new Microsoft.Maps.Map('#myMap', {
+        mapTypeId: Microsoft.Maps.MapTypeId.aerial,
+        center: new Microsoft.Maps.Location(8, 35),
+      });
+
+      overlay = new Microsoft.Maps.GroundOverlay({
+        // bounds: Microsoft.Maps.LocationRect.fromEdges(9.992, 32.5, 4.992, 37.5),
+        bounds: Microsoft.Maps.LocationRect.fromEdges(8.7495, 34.0625, 7.4999, 35.9374),
+        imageUrl: '/images/treecover2010_10N_030E_3750_2500_tp_red2.png',
+        opacity: 0
+      });
+      map.layers.insert(overlay);
+
+
+      infobox = new Microsoft.Maps.Infobox(map.getCenter(), {
+        htmlContent: infoboxTemplate,
+        visible: false,
+        showCloseButton: true
+      });
+      infobox.setMap(map);
+
+      //Load the DrawingTools module
+      Microsoft.Maps.loadModule(['Microsoft.Maps.DrawingTools', 'Microsoft.Maps.SpatialMath'], function () {
+        //Create a base layer to add drawn shapes.
+        baseLayer = new Microsoft.Maps.Layer();
+
+        //Add a click event to the base layer.
+        Microsoft.Maps.Events.addHandler(baseLayer, 'click', function (e) {
+          infobox.setOptions({
+            //Use the location of where the mouse was clicked to position the infobox.
+            location: e.location,
+            visible: true
+          });
+        });
+
+        map.layers.insert(baseLayer);
+
+        //Create an instance of the DrawingTools class and bind it to the map.
+        var tools = new Microsoft.Maps.DrawingTools(map);
+
+        //Show the drawing toolbar and enable editting on the map.
+        tools.showDrawingManager(function (manager) {
+          //Store a reference to the drawing manager as it will be useful later.
+          drawingManager = manager;
+
+          var da = Microsoft.Maps.DrawingTools.DrawingBarAction;
+          manager.setOptions({ drawingBarActions: da.polygon | da.edit | da.erase });
+
+          //Add events to the drawing manager to track the drawing state.
+          Microsoft.Maps.Events.addHandler(drawingManager, 'drawingStarted', function (e) {
+            document.getElementById('stopDrawingBtn').style.visibility = "visible";
+          });
+
+          Microsoft.Maps.Events.addHandler(drawingManager, 'drawingChanging', measureShape);
+          Microsoft.Maps.Events.addHandler(drawingManager, 'drawingStarted', measureShape);
+
+          Microsoft.Maps.Events.addHandler(drawingManager, 'drawingEnded', function (e) {
+            document.getElementById('stopDrawingBtn').style.visibility = "hidden";
+
+            overlay.setOptions({
+              //Use the location of where the mouse was clicked to position the infobox.
+              opacity: 0.7
+            });
+
+            //When use finisihes drawing a shape, removing it from the drawing layer and add it to the base layer.
+            moveShapesBetweenLayers(drawingManager, baseLayer);
+          });
+
+          Microsoft.Maps.Events.addHandler(drawingManager, 'drawingModeChanged', function (e) {
+            //When the mode changes to edit or erase, move all shapes in the baseLayer to the drawing layer.
+            if (e === Microsoft.Maps.DrawingTools.DrawingMode.edit || e === Microsoft.Maps.DrawingTools.DrawingMode.erase) {
+              moveShapesBetweenLayers(baseLayer, drawingManager);
+            }
+          });
+        })
+      });
+    }
+
+    function measureShape(shape) {
+      if (shape instanceof Microsoft.Maps.Polygon && shape.getLocations().length > 3) {
+        //Calculate the area of the polygon.
+        var area = Microsoft.Maps.SpatialMath.Geometry.area(shape, Microsoft.Maps.SpatialMath.AreaUnits.Acres);
+        //Round values to 2 decimals. 
+        area = Math.round(area * 100) / 100;
+
+        Microsoft.Maps.Events.addHandler(baseLayer, 'click', function (e) {
+          infobox.setOptions({
+            //Use the location of where the mouse was clicked to position the infobox.
+            htmlContent: infoboxTemplate.replace('{acres}', area),
+          });
+        });
+      }
+    }
+
+    function closeInfobox() {
+      infobox.setOptions({
+        //Use the location of where the mouse was clicked to position the infobox.
+        visible: false
+      });
+    }
+
+    function submitInfobox() {
+      const name = document.getElementById("ibname").value;
+      const ibforesttype = document.getElementById("ibforesttype").value;
+      const ibplcForest = document.getElementById("ibplcForest").checked;
+      const ibplcOther = document.getElementById("ibplcOther").checked;
+      const ibAge = document.getElementById("ibAge").value;
+      const ibArea = document.getElementById("ibArea").value;
+      window.location.href = "/farmer-report?name=" + name + "&foresttype=" + ibforesttype + "&plc=" + ibplcForest + "&age=" + ibAge + "&area=" + ibArea;
+    }
+
+    function stopDrawing() {
+      //Change the drawing mode to none to stop the drawing.
+      drawingManager.setDrawingMode(Microsoft.Maps.DrawingTools.DrawingMode.none);
+    }
+
+    function moveShapesBetweenLayers(fromLayer, toLayer) {
+      var shapes = fromLayer.getPrimitives();
+
+      if (shapes) {
+        fromLayer.clear();
+        toLayer.add(shapes);
+      }
+    }
+  </script>
+</head>
+
+<body onload='loadMapScenario();'>
+  <div id='printoutPanel'></div>
+  <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/map">Map</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/farmer-report">Forest Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/farmer-summary">Farmer Summary</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/buyer-summary">Trader Summary</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/forest-catalog">Forests Catalog</a>
+      </li>
+    </ul>
+    <a class="navbar-brand" href="/">
+      <img src="/images/rabobanklogo.png" width="142" height="40" class="d-inline-block align-top" alt="">
+    </a>
+  </nav>
+
+  <div id='myMap' style='width: 100vw; height: 100vh;'></div>
+  <input id="stopDrawingBtn" type="button" value="Stop Drawing" onclick="stopDrawing()" />
+
+  <div id="infoboxText" class="info-box">
+    <h2 class="info-box-title">New Forest Attributes</h2>
+
+    <div class="form-group">
+      <label class="info-box-label">Name:</label>
+      <input id="ibname" class="form-control" data-lpignore="true" autocomplete="off"
+        style="display: inline-block; width: 215px;">
+    </div>
+    <div class="form-group">
+      <label class="info-box-label">Forest Type:</label>
+      <select id="ibforesttype" class="form-control" style="display: inline-block; width: 215px;">
+        <option style="display: none;">Please Select</option>
+        <option>Anka</option>
+        <option>Koso</option>
+        <option>Acacia</option>
+        <option>Ficus</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="info-box-label">Past Land Cover:</label>
+      <div class="form-check form-check-inline">
+        <input id="ibplcForest" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
+          value="option1" checked>
+        <label class="form-check-label" for="inlineRadio1">Forest</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input id="ibplcOther" class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
+          value="option2">
+        <label class="form-check-label" for="inlineRadio2">Other</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="info-box-label">Age (yr):</label>
+      <input id="ibAge" class="form-control" type="number" style="display: inline-block; width: 215px;" value="0"
+        min="0" step="1" />
+    </div>
+    <div class="form-group">
+      <label class="info-box-label">Area (acres):</label>
+      <input id="ibArea" class="form-control" style="display: inline-block; width: 215px;" value="{acres}" />
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary" style="width: 47.5%;" onclick="closeInfobox()">Cancel</button>
+      <button type="submit" class="btn btn-primary" style="width: 47.5%;" onclick="submitInfobox()">Submit</button>
+    </div>
+  </div>
+</body>
+
+</html>
